@@ -48,19 +48,16 @@ commands
         args
         ----
 
-        --file [-l] (str):  A file containing a list (white space sep) of MSHR
+        --file [-f] (str):  A file containing a list (white space sep) of MSHR
                             ID's to include. eg. 123 124 125 ...
         --root [-r] (str):  [OPTIONAL] where to start recursively searching from (default: ".")
 
         example
         -------
 
-        # pipes a list of all *.fastq.gz files in any directory below 
-        # "/data/x" into a file called "list_of_fastq.txt"
-
-        find_mshr.py search --root "/data/x" --pattern "*.fastq.gz" > list_of_fastq.txt
+        find_mshr.py search --root "/data/x" --file "list_of_mshr_ids.txt"
         # or 
-        find_mshr.py search -r "/data/x" -p "*.fastq.gz" > list_of_fastq.txt
+        find_mshr.py search -r "/data/x" -f "list_of_mshr_ids.txt"
 
     link
     ----
@@ -72,7 +69,7 @@ commands
         args
         ----
 
-        --file [-l] (str):      A file containing a list (white space sep) of MSHR
+        --file [-f] (str):      A file containing a list (white space sep) of MSHR
                                 ID's to include. eg. 123 124 125 ...
         --target [-t] (str):    [OPTIONAL] the folder to link the files to (default: ".")
         --root [-r] (str):      [OPTIONAL] where to start recursively searching from (default: ".")
@@ -85,7 +82,7 @@ commands
 
         find_mshr.py link --file list_of_mshr_ids.txt --root "/data/x" --target "/home/me/x"
         # or 
-        find_mshr.py link -f list_of_mshr_ids.txt -t "/home/me/x"
+        find_mshr.py link -f list_of_mshr_ids.txt -r "/data/x"  -t "/home/me/x"
 
         # actual command that i used as part of my BPS training program
         find_mshr.py link \\
