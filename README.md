@@ -64,6 +64,24 @@ Same as link, except wont actually create the links, instead it just prints the 
 would have made. Useful for checking links before actually creating them. Accepts all the 
 same arguments and behaves the same as the `link` command.
 
+## Installing
+
+easiest way would be to just curl it down into your ~/bin folder and call it from there (make sure you `chmod +x find_mshr.py`).
+
+```bash
+# can skip if you already have a ~/bin
+mkdir -p ~/bin
+
+# change into ~/bin
+cd ~/bin
+
+# curl the script down (download it)
+curl -o find_mshr.py https://raw.githubusercontent.com/schlerp/find_mshr/main/find_mshr.py
+
+# enable direct execution
+chmod +x find_mshr.py
+```
+
 ## Author
 
 [Patrick Coffey](https://github.com/schlerp), 2022
