@@ -106,10 +106,10 @@ from typing import Dict, List
 from pathlib import Path
 
 
-def load_from_file(file: Path) -> List[int]:
+def load_from_file(file: Path) -> List[str]:
     if not file.exists():
         exit("file {} doesn't exist!".format(file.as_posix()))
-    return [int(x) for x in file.read_text().split()]
+    return [x for x in file.read_text().split()]
 
 
 def print_search_output(results: List[Path]):
@@ -118,12 +118,12 @@ def print_search_output(results: List[Path]):
 
 def extract_mshr_id(
     file: Path,
-    mshr_extract_pattern: str = r"(?:[a-zA-Z_\/\\]*)MSHR([0-9]+)(?:[MIXED]?)(?:[\w-]*)_(?:[R]?)([0-9]+)",
+    mshr_extract_pattern: str = r"(?:[a-zA-Z_\/\\]*)MSHR([0-9a-zA-Z]+)(?:[MIXED]?)(?:[\w-]*)_(?:[R]?)([0-9]+)",
 ) -> str:
     mshr_pattern = re.compile(mshr_extract_pattern)
     match = mshr_pattern.search(Path(file).as_posix())
     if match:
-        mshr_id_n = "{}-{}".format(int(match[1]), int(match[2]))
+        mshr_id_n = "{}-{}".format(match[1], match[2])
         return mshr_id_n
 
 
@@ -137,7 +137,7 @@ def filter_for_mshr_id(
         mshr_id_n = extract_mshr_id(file)
         if not mshr_id_n:
             continue
-        mshr_id = int(mshr_id_n.split("-")[0])
+        mshr_id = mshr_id_n.split("-")[0]
         if mshr_id in id_list:
             ret_list.append(file)
     return ret_list
@@ -146,7 +146,7 @@ def filter_for_mshr_id(
 def solve_duplicates(
     file_paths: List[Path], resolution_policy: str = "newest"
 ) -> List[Path]:
-    file_map: Dict[int, List[Path]] = {}
+    file_map: Dict[str, List[Path]] = {}
     for file in file_paths:
         mshr_id = extract_mshr_id(file)
         if not file_map.get(mshr_id):
