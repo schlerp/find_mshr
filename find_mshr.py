@@ -100,10 +100,10 @@ commands
 Patrick Coffey, 2022
 """
 
-import sys
 import re
-from typing import Dict, List
+import sys
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 def load_from_file(file: Path) -> List[str]:
@@ -119,12 +119,13 @@ def print_search_output(results: List[Path]):
 def extract_mshr_id(
     file: Path,
     mshr_extract_pattern: str = r"(?:[a-zA-Z_\/\\]*)MSHR([0-9a-zA-Z]+)(?:[MIXED]?)(?:[\w-]*)_(?:[R]?)([0-9]+)",
-) -> str:
+) -> Optional[str]:
     mshr_pattern = re.compile(mshr_extract_pattern)
     match = mshr_pattern.search(Path(file).as_posix())
     if match:
         mshr_id_n = "{}-{}".format(match[1], match[2])
         return mshr_id_n
+    return None
 
 
 def filter_for_mshr_id(
@@ -149,9 +150,10 @@ def solve_duplicates(
     file_map: Dict[str, List[Path]] = {}
     for file in file_paths:
         mshr_id = extract_mshr_id(file)
-        if not file_map.get(mshr_id):
-            file_map[mshr_id] = []
-        file_map[mshr_id].append(file)
+        if mshr_id:
+            if not file_map.get(mshr_id):
+                file_map[mshr_id] = []
+            file_map[mshr_id].append(file)
 
     ret_list = []
     for mshr_id, file_paths in file_map.items():
@@ -169,8 +171,8 @@ def solve_duplicates(
 
 
 def do_search(
-    file: Path = None,
-    root: Path = ".",
+    file: Optional[Path] = None,
+    root: Path = Path("."),
     pattern: str = "*",
     allow_list: List[str] = ["mshr"],
     deny_list: List[str] = ["mixed"],
@@ -189,13 +191,13 @@ def do_search(
 
 
 def search(
-    file: Path = None,
-    root: Path = None,
-    pattern: str = None,
+    file: Optional[Path] = None,
+    root: Optional[Path] = None,
+    pattern: Optional[str] = None,
     allow_list: List[str] = ["mshr"],
     deny_list: List[str] = ["mixed"],
-) -> str:
-    root = root or "."
+):
+    root = root or Path(".")
     pattern = pattern or "*"
     results = do_search(
         file=file,
@@ -208,18 +210,18 @@ def search(
 
 
 def link(
-    root: Path = None,
-    pattern: str = None,
-    target: Path = None,
-    file: Path = None,
+    root: Optional[Path] = None,
+    pattern: Optional[str] = None,
+    target: Optional[Path] = None,
+    file: Optional[Path] = None,
     dry_run: bool = False,
 ):
     if file is None and target is None:
         exit("Must specify either --file or --root and --pattern arguments!")
 
-    root = root or "."
+    root = root or Path(".")
     pattern = pattern or "*"
-    target = target or "."
+    target = target or Path(".")
 
     file_paths = do_search(file=file, root=root, pattern=pattern)
 
@@ -234,12 +236,15 @@ def link(
 
 
 def dry_link(
-    root: Path = None, pattern: str = None, target: Path = None, file: Path = None
+    root: Optional[Path] = None,
+    pattern: Optional[str] = None,
+    target: Optional[Path] = None,
+    file: Optional[Path] = None,
 ):
     link(root=root, pattern=pattern, target=target, file=file, dry_run=True)
 
 
-def exit(message: str = None):
+def exit(message: Optional[str] = None):
     if message:
         print(message)
     raise SystemExit(__doc__)
@@ -266,7 +271,7 @@ def main():
                 elif opt in ("-p", "--pattern"):
                     pattern = args[idx]
                 elif opt in ("-f", "--file"):
-                    file = args[idx]
+                    file = Path(args[idx])
 
             search(root=root, pattern=pattern, file=file)
 
